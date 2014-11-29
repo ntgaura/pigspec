@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = PigSpec::VERSION
   spec.authors       = ['shiracha']
   spec.email         = ['shiracha.rikyu@gmail.com']
-  spec.summary       = 'A Testing Framework for Apache Pig.'
-  spec.description   = 'A Testing Framework for Apache Pig.'
+  spec.summary       = 'A Testing Framework extension for Apache Pig.'
+  spec.description   = 'A Testing Framework extension for Apache Pig.To setup, executing and get the result.'
   spec.homepage      = ''
   spec.license       = 'MIT'
 
