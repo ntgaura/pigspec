@@ -68,9 +68,12 @@ module PigSpec
       @string_util_class.join(alias_values, "\n")
     end
 
+    attr_reader :data_type_enum
+
   private
 
     def import_classies
+      require 'rjb/list'
       @pig_test_class = Rjb.import('org.apache.pig.pigunit.PigTest')
       @cluster_class = Rjb.import('org.apache.pig.pigunit.Cluster')
       @file_localizer_class = Rjb.import('org.apache.pig.impl.io.FileLocalizer')
@@ -96,12 +99,47 @@ module PigSpec
     end
 
     def run_script(goal_alias)
-      # TODO: NOT stringify, but read pig types and cast ruby type.
-      @bridge.stringify(@instance.getAlias(goal_alias)).split("\n")
+      items = []
+      @instance.getAlias(goal_alias).each do |item|
+        items.push read_tuple(item)
+      end
+      items
     end
 
     def override(name, query)
       @instance.override name, query
+    end
+
+  private
+
+    def read_as(type, value)  # rubocop:disable Metrics/AbcSize, Style/CyclomaticComplexity, Style/MethodLength
+      return value unless type
+      # AllTypes: http://pig.apache.org/docs/r0.11.1/api/org/apache/pig/data/DataType.html
+      types = @bridge.data_type_enum
+      case type
+      when types.CHARARRAY, types.BYTEARRAY, types.DATETIME then value.toString
+      # daringly no cast to test convinience
+      when types.DATETIME then value.toString
+      when types.LONG, types.INTEGER, types.BYTE then value.toString.to_i
+      when types.DOUBLE, types.FLOAT then value.toString.to_f
+      when types.BOOLEAN then value.toString.downcase.include? 't'
+      when types.TUPLE then read_tuple value
+      # TODO: types.MAP is schemaless...How to cast it...?
+      when types.MAP then value.toString # read_map value
+      when types.UNKNOWN then nil
+      else nil
+      end
+    end
+
+    def read_tuple(tuple)
+      casted = []
+      tuple.size.times do|index|
+        type = tuple.getType index
+        value = nil
+        value = tuple.get(index) unless tuple.isNull index
+        casted.push read_as(type, value)
+      end
+      casted
     end
   end
 end # module PigSpec

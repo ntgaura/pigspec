@@ -17,7 +17,7 @@ gem 'pigspec'
 And then execute:
 
 ```bash
-`$ bundle`
+$ bundle
 ```
 
 Or install it yourself as:
@@ -47,9 +47,29 @@ describe 'SamplePigTest' do
       override 'in', %w(hoge hoge hoge)
       pickup 'out'
     end
-    expect(actual).to eq(%w((hoge)))
+    expect(actual).to eq([['hoge']])
   end
+end
 ```
+
+pig returns `pickup`ed alias datas.
+
+Readed datatype are following:
+
+| Pig DataType          | Ruby Class   |
+|-----------------------|--------------|
+| bag                   | Array        |
+| tuple                 | Array        |
+| map                   | String       |
+| chararray             | String       |
+| bytearray             | String       |
+| datetime              | String       |
+| long                  | Integer      |
+| integer               | Integer      |
+| double                | Float        |
+| float                 | Float        |
+| boolean               | True/False   |
+
 
 Second: Set environment variable `PIG_HOME` to Your pig installed directory, And Run.
 ```bash

@@ -15,7 +15,7 @@ input = %w(
   huge
 )
 output_alias = 'out'
-output = %w((hoge))
+output = [['hoge']]
 
 # ---------------------- test
 
@@ -63,7 +63,7 @@ describe PigSpec do
       override input_alias, input
       pickup output_alias
     end
-    expect(actual).to eq(%w((testconcat_hoge)))
+    expect(actual).to eq([['testconcat_hoge']])
   end
 
   it 'can import pig macro(script_file)' do
@@ -73,7 +73,7 @@ describe PigSpec do
       override input_alias, input
       pickup output_alias
     end
-    expect(actual).to eq(%w((testconcat_hoge)))
+    expect(actual).to eq([['testconcat_hoge']])
   end
 
   # TODO: avoiding duplicated macro error...
@@ -93,7 +93,7 @@ describe PigSpec do
       override 'in_00', input
       pickup output_alias
     end
-    expect(actual).to eq(%w((hoge,4) (hage,3) (haga,2) (huge,1)))
+    expect(actual).to eq([['hoge', 4], ['hage', 3], ['haga', 2], ['huge', 1]])
   end
 
   it 'can override macro relation' do
@@ -109,6 +109,6 @@ describe PigSpec do
       override 'in_00', input
       pickup output_alias
     end
-    expect(actual).to eq(%w((hoge,4) (hage,3) (haga,2) (huge,1)))
+    expect(actual).to eq([['hoge', 4], ['hage', 3], ['haga', 2], ['huge', 1]])
   end
 end
