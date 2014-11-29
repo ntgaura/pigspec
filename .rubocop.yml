@@ -1,0 +1,8 @@
+Style/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/LineLength:
+  Enabled: false
