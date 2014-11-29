@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['shiracha.rikyu@gmail.com']
   spec.summary       = 'A Testing Framework extension for Apache Pig.'
   spec.description   = 'A Testing Framework extension for Apache Pig.To setup, executing and get the result.'
-  spec.homepage      = ''
+  spec.homepage      = 'https://github.com/shiracha/pigspec'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
