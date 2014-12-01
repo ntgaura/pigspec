@@ -124,11 +124,20 @@ module PigSpec
       when types.DOUBLE, types.FLOAT then value.toString.to_f
       when types.BOOLEAN then value.toString.downcase.include? 't'
       when types.TUPLE then read_tuple value
+      when types.BAG then read_bag value
       # TODO: types.MAP is schemaless...How to cast it...?
       when types.MAP then value.toString # read_map value
       when types.UNKNOWN then nil
       else nil
       end
+    end
+
+    def read_bag(bag)
+      casted = []
+      bag.each do |tuple|
+        casted.push read_tuple(tuple)
+      end
+      casted
     end
 
     def read_tuple(tuple)
