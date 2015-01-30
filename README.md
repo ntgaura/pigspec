@@ -1,6 +1,6 @@
 # PigSpec
 
-PigSpec is a extention for rspec testing framework for Apache Pig.
+PigSpec is an extention for rspec testing framework for Apache Pig.
 This extention can execute pig script with customize input relation data, and can get output relation data in ruby easily.
 
 
