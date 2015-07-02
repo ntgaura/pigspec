@@ -61,7 +61,9 @@ module PigSpec
       raw_schema = server.dumpSchema(alias_name)
       builder = @string_builder_class.new
       @schema_class.stringifySchema(builder, raw_schema, @data_type_enum.TUPLE)
-      builder.toString
+      str_schema = builder.toString
+      return nil if str_schema.split("\n").join('') == '()'
+      str_schema
     end
 
     def stringify(alias_values)

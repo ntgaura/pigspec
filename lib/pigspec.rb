@@ -78,8 +78,9 @@ module PigSpec
         Test.bridge.upload_text item[:value], temp
 
         schema = Test.bridge.schema item[:name]
-
-        query = "#{item[:name]} = LOAD '#{temp}' USING PigStorage('\\t') AS #{schema};"
+        query  = "#{item[:name]} = LOAD '#{temp}' USING PigStorage('\\t')"
+        query += " AS #{schema}" unless schema.nil?
+        query += ';'
         test.override item[:name], query
       end
     end
