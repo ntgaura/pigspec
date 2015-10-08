@@ -12,19 +12,25 @@ module PigSpec
 
     class << self
       attr_reader :bridge
-      def construct
-        @bridge ||= JavaBridge.new
-      rescue ArgumentError
-        raise 'Environment variable PIG_HOME does not found or does not correct. It must point to your installation of Apache Pig.'
+      def construct(pig_path, pigunit_path)
+        @pig_path = pig_path if @pig_path.nil?
+        @pigunit_path = pigunit_path if @pigunit_path.nil?
+
+        fail ArgumentError, 'This version pigspec only can a unique pig_path for one process.' unless @pig_path == pig_path
+        fail ArgumentError, 'This version pigspec only can a unique pigunit_path for one process.' unless @pigunit_path == pigunit_path
+
+        @bridge ||= JavaBridge.new @pig_path, @pigunit_path
       end
     end
 
-    def setup
-      Test.construct
+    def setup(pig_path, pigunit_path)
+      Test.construct pig_path, pigunit_path
       @script = []
       @args = []
       @override = []
       @pickup = nil
+      # rescue ArgumentError
+      # raise 'Must needs pig_path and pigunit_path. It must point to your installation of Apache Pig/PigUnit jar files.'
     end
 
     def shutdown
@@ -88,9 +94,13 @@ module PigSpec
 
 module_function
 
-  def pig(&block)
+  def pig(
+    pig_path = File.join(ENV['PIG_HOME'], 'pig.jar'),
+    pigunit_path = File.join(ENV['PIG_HOME'], 'pigunit.jar'),
+    &block
+  )
     test = Test.new
-    test.setup
+    test.setup(pig_path, pigunit_path)
     test.evaluate(&block)
     result = test.run
     test.shutdown

@@ -5,16 +5,17 @@ require 'tempfile'
 module PigSpec
   # bridge for java pig classies
   class JavaBridge
-    def initialize(pig_home = ENV['PIG_HOME'])
-      fail ArgumentError, 'pig_home must not be nil.' unless pig_home
+    def initialize(pig_path, pigunit_path)
+      fail ArgumentError, 'pig_path must not be nil.' if pig_path.nil?
+      fail ArgumentError, 'pigunit_path must not be nil.' if pigunit_path.nil?
 
-      Rjb.add_classpath(File.join(pig_home, 'pig.jar'))
-      Rjb.add_classpath(File.join(pig_home, 'pigunit.jar'))
+      Rjb.add_classpath(pig_path)
+      Rjb.add_classpath(pigunit_path)
 
       Rjb.load '.', ['-Dfile.encoding=UTF-8']
 
-      Rjb.add_jar(File.join(pig_home, 'pig.jar'))
-      Rjb.add_jar(File.join(pig_home, 'pigunit.jar'))
+      Rjb.add_jar(pig_path)
+      Rjb.add_jar(pigunit_path)
 
       import_classies
     end
