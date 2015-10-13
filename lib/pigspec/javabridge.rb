@@ -5,18 +5,8 @@ require 'tempfile'
 module PigSpec
   # bridge for java pig classies
   class JavaBridge
-    def initialize(pig_path, pigunit_path)
-      fail ArgumentError, 'pig_path must not be nil.' if pig_path.nil?
-      fail ArgumentError, 'pigunit_path must not be nil.' if pigunit_path.nil?
-
-      Rjb.add_classpath(pig_path)
-      Rjb.add_classpath(pigunit_path)
-
-      Rjb.load '.', ['-Dfile.encoding=UTF-8']
-
-      Rjb.add_jar(pig_path)
-      Rjb.add_jar(pigunit_path)
-
+    def initialize(pig_path, pigunit_path, options)
+      load_pig pig_path, pigunit_path, options
       import_classies
     end
 
@@ -74,6 +64,19 @@ module PigSpec
     attr_reader :data_type_enum
 
   private
+
+    def load_pig(pig_path, pigunit_path, options)
+      fail ArgumentError, 'pig_path must not be nil.' if pig_path.nil?
+      fail ArgumentError, 'pigunit_path must not be nil.' if pigunit_path.nil?
+
+      Rjb.add_classpath(pig_path)
+      Rjb.add_classpath(pigunit_path)
+
+      Rjb.load '.', options.map { |k, v| "-D#{k}=#{v}" }
+
+      Rjb.add_jar(pig_path)
+      Rjb.add_jar(pigunit_path)
+    end
 
     def import_classies
       require 'rjb/list'

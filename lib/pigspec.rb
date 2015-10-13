@@ -12,25 +12,28 @@ module PigSpec
 
     class << self
       attr_reader :bridge
-      def construct(pig_path, pigunit_path)
-        @pig_path = pig_path if @pig_path.nil?
-        @pigunit_path = pigunit_path if @pigunit_path.nil?
+      def construct(pig_path, pigunit_path, options)
+        @pig_path ||= pig_path
+        @pigunit_path ||= pigunit_path
+        @options ||= options
 
-        fail ArgumentError, 'This version pigspec only can a unique pig_path for one process.' unless @pig_path == pig_path
-        fail ArgumentError, 'This version pigspec only can a unique pigunit_path for one process.' unless @pigunit_path == pigunit_path
+        fail ArgumentError, 'This version pigspec only can same pig_path for all processes.' unless @pig_path == pig_path
+        fail ArgumentError, 'This version pigspec only can same pigunit_path for all processes.' unless @pigunit_path == pigunit_path
+        fail ArgumentError, 'This version pigspec only can same options for all processes.' unless @options == options
 
-        @bridge ||= JavaBridge.new @pig_path, @pigunit_path
+        @bridge ||= JavaBridge.new @pig_path, @pigunit_path, @options
       end
     end
 
-    def setup(pig_path, pigunit_path)
-      Test.construct pig_path, pigunit_path
+    def setup(pig_path, pigunit_path, options)
+      fail ArgumentError, 'Must needs pig_path. It must point to your installation of Apache Pig/PigUnit jar files.' if pig_path.nil?
+      fail ArgumentError, 'Must needs pigunit_path. It must point to your installation of Apache Pig/PigUnit jar files.' if pigunit_path.nil?
+
+      Test.construct pig_path, pigunit_path, options
       @script = []
       @args = []
       @override = []
       @pickup = nil
-      # rescue ArgumentError
-      # raise 'Must needs pig_path and pigunit_path. It must point to your installation of Apache Pig/PigUnit jar files.'
     end
 
     def shutdown
@@ -97,10 +100,10 @@ module_function
   def pig(
     pig_path = File.join(ENV['PIG_HOME'], 'pig.jar'),
     pigunit_path = File.join(ENV['PIG_HOME'], 'pigunit.jar'),
-    &block
+    options = { 'file.encoding' => 'UTF-8' }, &block
   )
     test = Test.new
-    test.setup(pig_path, pigunit_path)
+    test.setup(pig_path, pigunit_path, options)
     test.evaluate(&block)
     result = test.run
     test.shutdown
