@@ -100,7 +100,7 @@ module_function
   def pig(
     pig_path = File.join(ENV['PIG_HOME'], 'pig.jar'),
     pigunit_path = File.join(ENV['PIG_HOME'], 'pigunit.jar'),
-    options = { 'file.encoding' => 'UTF-8' }, &block
+    options = ['-Dfile.encoding=UTF-8'], &block
   )
     test = Test.new
     test.setup(pig_path, pigunit_path, options)

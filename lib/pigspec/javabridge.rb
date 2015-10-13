@@ -72,7 +72,7 @@ module PigSpec
       Rjb.add_classpath(pig_path)
       Rjb.add_classpath(pigunit_path)
 
-      Rjb.load '.', options.map { |k, v| "-D#{k}=#{v}" }
+      Rjb.load '.', options
 
       Rjb.add_jar(pig_path)
       Rjb.add_jar(pigunit_path)
