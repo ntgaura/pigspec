@@ -58,8 +58,8 @@ module PigSpec
     end
     expose :with_args
 
-    def override(name, value)
-      @override.push name: name, value: value
+    def override(name, value, options = {})
+      @override.push name: name, value: value, schema: options[:as]
     end
     expose :override
 
@@ -83,15 +83,30 @@ module PigSpec
 
     def apply_override(test)
       @override.each do |item|
-        temp = Test.bridge.create_hdfs_temp
-        Test.bridge.upload_text item[:value], temp
-
-        schema = Test.bridge.schema item[:name]
-        query  = "#{item[:name]} = LOAD '#{temp}' USING PigStorage('\\t')"
-        query += " AS #{schema}" unless schema.nil?
-        query += ';'
+        value_file = upload_override_value item
+        query = compose_override_query item, value_file
         test.override item[:name], query
       end
+    end
+
+    def upload_override_value(item)
+      temp = Test.bridge.create_hdfs_temp
+      Test.bridge.upload_text item[:value], temp
+      temp
+    end
+
+    def compose_override_query(item, value_file)
+      schema = compose_override_schema item
+      query  = "#{item[:name]} = LOAD '#{value_file}' USING PigStorage('\\t')"
+      query += " AS #{schema}" unless schema.nil?
+      query += ';'
+      query
+    end
+
+    def compose_override_schema(item)
+      schema = item[:schema]
+      schema ||= Test.bridge.schema item[:name]
+      schema
     end
   end # class Test
 
